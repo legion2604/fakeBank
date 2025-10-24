@@ -7,12 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterUserRoutes(r *gin.RouterGroup, handlers controller.AuthController) {
+func RegisterAuthRoutes(r *gin.RouterGroup, handlers controller.AuthController) {
 	user := r.Group("/auth")
 	{
 		user.POST("login", handlers.Login)
 		user.POST("signup", handlers.Signup)
-		user.GET("me", middleware.JWTAuthMiddleware(), handlers.Me)
 		user.POST("logout", handlers.Logout)
+		user.GET("me", middleware.JWTAuthMiddleware(), handlers.Me)
 	}
 }
