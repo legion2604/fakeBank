@@ -2,15 +2,6 @@ package models
 
 import "time"
 
-type User struct {
-	Id        int
-	FirstName string
-	LastName  string
-	Email     string
-	Password  string
-	Phone     string
-}
-
 type GetUser struct {
 	Id        int       `json:"id"`
 	FirstName string    `json:"firstName"`

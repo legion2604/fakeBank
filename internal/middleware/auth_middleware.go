@@ -8,6 +8,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+const (
+	contextKey = "userID"
+)
+
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		accessToken, err := c.Cookie("access_token")
@@ -36,12 +40,16 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userId", int(userIdFloat))
+		c.Set(contextKey, int(userIdFloat))
 		c.Next()
 	}
 }
 
 func GetUserIDFromContext(c *gin.Context) int {
-	id := c.GetInt("userId") // достаём значение из контекста
-	return id
+	id, exists := c.Get(string(contextKey))
+	if !exists {
+		return 0
+	}
+
+	return id.(int)
 }
