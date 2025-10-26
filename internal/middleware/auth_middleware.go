@@ -46,7 +46,7 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 }
 
 func GetUserIDFromContext(c *gin.Context) int {
-	id, exists := c.Get(string(contextKey))
+	id, exists := c.Get(contextKey)
 	if !exists {
 		return 0
 	}

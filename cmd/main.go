@@ -27,6 +27,14 @@ func main() {
 	userService := service.NewUserService(userRepo)
 	userController := controller.NewUserHandler(userService)
 
+	accRepo := repository.NewAccountRepository(database.DB)
+	accService := service.NewAccountService(accRepo)
+	accController := controller.NewAccountHandler(accService)
+
+	transactionRepo := repository.NewTransactionRepository(database.DB)
+	transactionService := service.NewTransactionService(transactionRepo)
+	transactionController := controller.NewTransactionHandler(transactionService)
+
 	c.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5174"},
 		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "DELETE", "OPTIONS"},
@@ -38,6 +46,9 @@ func main() {
 	{
 		routes.RegisterAuthRoutes(api, authController)
 		routes.RegisterUserRoutes(api, userController)
+		routes.RegisterAccountRoutes(api, accController)
+		routes.RegisterTransactionRoutes(api, transactionController)
+
 	}
 
 	c.Run(":8080")
