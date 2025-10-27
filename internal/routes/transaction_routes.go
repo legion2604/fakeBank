@@ -12,5 +12,7 @@ func RegisterTransactionRoutes(r *gin.RouterGroup, handlers controller.Transacti
 	{
 		transactions.GET("", handlers.GetTransactions)
 		transactions.GET("/:transactionId", handlers.GetTransactionById)
+
 	}
+	r.POST("/transfers", middleware.JWTAuthMiddleware(), handlers.CreateTransactionTransfer)
 }

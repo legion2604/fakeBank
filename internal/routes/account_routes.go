@@ -12,5 +12,6 @@ func RegisterAccountRoutes(r *gin.RouterGroup, handlers controller.AccountContro
 	{
 		accounts.GET("", handlers.GetAccounts)
 		accounts.GET("/:accountId", handlers.GetAccountById)
+		accounts.POST("", handlers.CreateAccount)
 	}
 }

@@ -34,3 +34,10 @@ type TransactionWithdrawal struct {
 	Status      string  `json:"status"`
 	CreatedAt   string  `json:"createdAt"`
 }
+
+type TransactionTransferReq struct {
+	FromAccount string  `json:"fromAccountId"`
+	ToEmail     string  `json:"toEmail"`
+	Amount      float64 `json:"amount"`
+	Description string  `json:"description"`
+}

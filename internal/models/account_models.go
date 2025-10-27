@@ -8,3 +8,8 @@ type Account struct {
 	Currency      string  `json:"currency"`
 	CreatedAt     string  `json:"createdAt"`
 }
+
+type CreateAccountReq struct {
+	AccountType string `json:"accountType"`
+	AccountName string `json:"accountName"`
+}

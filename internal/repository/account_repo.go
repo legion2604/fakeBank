@@ -8,6 +8,7 @@ import (
 type AccountRepository interface {
 	GetAccounts(userID int) ([]models.Account, error)
 	GetAccountByID(userID int) (models.Account, error)
+	CreateAccount(accId int, accountType, accountName string) (models.Account, error)
 }
 
 type accountRepo struct {
@@ -36,9 +37,20 @@ func (r *accountRepo) GetAccounts(userID int) ([]models.Account, error) {
 	return account, nil
 }
 
-func (r *accountRepo) GetAccountByID(userID int) (models.Account, error) {
+func (r *accountRepo) GetAccountByID(accId int) (models.Account, error) {
 	var res models.Account
-	err := r.db.QueryRow("SELECT id, account_number, account_type, balance, currency, created_at FROM accounts WHERE account_user_id = $1", userID).Scan(&res.ID, &res.AccountNumber, &res.AccountType, &res.Balance, &res.Currency, &res.CreatedAt)
+	err := r.db.QueryRow("SELECT id, account_number, account_type, balance, currency, created_at FROM accounts WHERE id = $1", accId).Scan(&res.ID, &res.AccountNumber, &res.AccountType, &res.Balance, &res.Currency, &res.CreatedAt)
+	if err != nil {
+		return models.Account{}, err
+	}
+	return res, nil
+}
+
+func (r *accountRepo) CreateAccount(userId int, accountType, accountName string) (models.Account, error) {
+	var res models.Account
+	err := r.db.QueryRow("INSERT into accounts (account_type, account_name, account_user_id) values ($1, $2,$3) RETURNING id,account_number,balance,currency,created_at", accountType, accountName, userId).Scan(&res.ID, &res.AccountNumber, &res.Balance, &res.Currency, &res.CreatedAt)
+	res.AccountType = accountType
+
 	if err != nil {
 		return models.Account{}, err
 	}
