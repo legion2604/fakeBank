@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fakeBank/internal/models"
 	"fakeBank/internal/service"
 	"fmt"
 	"net/http"
@@ -13,7 +12,6 @@ import (
 type TransactionController interface {
 	GetTransactions(cxt *gin.Context)
 	GetTransactionById(cxt *gin.Context)
-	CreateTransactionTransfer(cxt *gin.Context)
 }
 type transactionController struct {
 	transactionService service.TransactionService
@@ -45,22 +43,4 @@ func (h *transactionController) GetTransactionById(cxt *gin.Context) {
 		return
 	}
 	cxt.JSON(http.StatusOK, res)
-}
-
-func (h *transactionController) CreateTransactionTransfer(cxt *gin.Context) {
-	var req models.TransactionTransferReq
-	if err := cxt.ShouldBindJSON(&req); err != nil {
-		cxt.JSON(http.StatusBadRequest, err)
-		return
-	}
-	res, err := h.transactionService.CreateTransactionTransfer(req)
-	if err != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err})
-		fmt.Println(err)
-
-		return
-	}
-	fmt.Println(err)
-
-	cxt.JSON(http.StatusOK, gin.H{"transactionId": res})
 }

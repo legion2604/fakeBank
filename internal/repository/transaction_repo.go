@@ -10,9 +10,6 @@ import (
 type TransactionRepository interface {
 	GetTransactions(accountId, limitStr, offsetStr int) ([]interface{}, error)
 	GetTransactionById(AccId int) (interface{}, error)
-	CreateTransactionTransfer(accountId, fromAccountId, toAccountId int, amount float64, TType, status, description string) (models.TransactionTransfer, error)
-	GetAccountIdByEmail(email string) (int, error)
-	GetBalanceById(accId int) (float64, error)
 }
 type transactionRepo struct {
 	db *sql.DB
@@ -138,39 +135,4 @@ func (r *transactionRepo) GetTransactionById(TransId int) (interface{}, error) {
 	}
 
 	return nil, nil
-}
-
-func (r *transactionRepo) CreateTransactionTransfer(accountId, fromAccountId, toAccountId int, amount float64, TType, status, description string) (models.TransactionTransfer, error) {
-	var res models.TransactionTransfer
-	err := r.db.QueryRow("INSERT INTO transactions (account_id, type, amount, description, from_account, to_account, status) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id,account_id,from_account,to_account,created_at", accountId, TType, amount, description, fromAccountId, toAccountId, status).Scan(&res.Id, &res.AccountId, &res.FromAccount, &res.ToAccount, &res.CreatedAt)
-	if err != nil {
-		return models.TransactionTransfer{}, err
-	}
-	res.Amount = amount
-	res.Currency = "USD"
-	res.Type = TType
-	res.Status = status
-	res.Description = description
-
-	return res, nil
-}
-
-func (r *transactionRepo) GetAccountIdByEmail(email string) (int, error) {
-	var accId int
-	err := r.db.QueryRow("SELECT a.id FROM accounts a JOIN users u ON a.account_user_id = u.id WHERE u.email = $1 LIMIT 1;", email).Scan(&accId)
-	if err != nil {
-		fmt.Println(err)
-		return 0, err
-	}
-	return accId, nil
-}
-
-func (r *transactionRepo) GetBalanceById(accId int) (float64, error) {
-	var balance float64
-	err := r.db.QueryRow("SELECT balance FROM accounts WHERE id = $1", accId).Scan(&balance)
-	if err != nil {
-		fmt.Println(err)
-		return 0, err
-	}
-	return balance, nil
 }

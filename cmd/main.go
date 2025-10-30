@@ -2,13 +2,16 @@ package main
 
 import (
 	"fakeBank/internal/controller"
+	operationController "fakeBank/internal/controller/operation"
+	"fakeBank/internal/middleware"
 	"fakeBank/internal/repository"
+	operationRepo "fakeBank/internal/repository/operation"
 	"fakeBank/internal/routes"
+	operationRoutes "fakeBank/internal/routes/operation"
 	"fakeBank/internal/service"
+	operationService "fakeBank/internal/service/operation"
 	"fakeBank/pkg/config"
 	"fakeBank/pkg/database"
-
-	"github.com/gin-contrib/cors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,20 +38,19 @@ func main() {
 	transactionService := service.NewTransactionService(transactionRepo)
 	transactionController := controller.NewTransactionHandler(transactionService)
 
-	c.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5174"},
-		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-	}))
+	transferRepo := operationRepo.NewTransferRepository(database.DB)
+	transferService := operationService.NewTransferService(transferRepo)
+	transferController := operationController.NewTransactionHandler(transferService)
+
+	c.Use(middleware.CORSMiddleware())
+
 	api := c.Group("/api")
 	{
 		routes.RegisterAuthRoutes(api, authController)
 		routes.RegisterUserRoutes(api, userController)
 		routes.RegisterAccountRoutes(api, accController)
 		routes.RegisterTransactionRoutes(api, transactionController)
-
+		operationRoutes.RegisterTransferRoutes(api, transferController)
 	}
 
 	c.Run(":8080")
